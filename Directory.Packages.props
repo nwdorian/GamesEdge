@@ -1,0 +1,11 @@
+<Project>
+    <PropertyGroup>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    </PropertyGroup>
+    <ItemGroup>
+        <!-- Static code analysis -->
+        <PackageVersion Include="IDisposableAnalyzers" Version="4.0.8" />
+        <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.23.0.137933" />
+        <!-- Web -->
+    </ItemGroup>
+</Project>
