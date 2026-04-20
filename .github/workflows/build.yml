@@ -11,6 +11,12 @@ jobs:
         steps:
             - uses: actions/checkout@v6
 
+            - name: Restore tools
+              run: dotnet tool restore
+
+            - name: Check Formatting
+              run: dotnet csharpier check .
+
             - name: Setup .NET
               uses: actions/setup-dotnet@v5
               with:
