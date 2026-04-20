@@ -6,6 +6,11 @@
         <!-- Static code analysis -->
         <PackageVersion Include="IDisposableAnalyzers" Version="4.0.8" />
         <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.23.0.137933" />
-        <!-- Web -->
+        <!-- Tests -->
+        <PackageVersion Include="coverlet.collector" Version="10.0.0" />
+        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
+        <PackageVersion Include="Shouldly" Version="4.3.0" />
+        <PackageVersion Include="xunit.v3" Version="3.2.2" />
+        <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
     </ItemGroup>
 </Project>
