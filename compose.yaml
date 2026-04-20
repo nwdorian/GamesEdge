@@ -7,7 +7,7 @@ services:
     ports:
       - 8080:8080
     depends_on:
-      movieboom.database:
+      gamesedge.database:
         condition: service_healthy
     
   gamesedge.database:
