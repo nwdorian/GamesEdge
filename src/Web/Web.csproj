@@ -3,6 +3,6 @@
         <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="Extensions\" />
+        <Folder Include="Extensions\" />
     </ItemGroup>
 </Project>
