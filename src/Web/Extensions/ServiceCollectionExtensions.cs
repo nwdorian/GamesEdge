@@ -10,6 +10,7 @@ public static class ServiceCollectionExtensions
     public static void AddPresentationServices(this IServiceCollection services)
     {
         services.AddIdentityServices();
+        services.AddControllersWithViews();
 
         services.ConfigureIdentityOptions();
         services.ConfigureCookieOptions();
