@@ -1,16 +1,35 @@
+using System.Globalization;
 using Infrastructure;
+using Serilog;
 using Web.Extensions;
 
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console(formatProvider: CultureInfo.CurrentCulture)
+    .CreateBootstrapLogger();
 
-builder.Services.AddPresentationServices(builder.Configuration);
-builder.Services.AddInfrastructureServices(builder.Configuration);
+try
+{
+    Log.Information("Starting application...");
 
-WebApplication app = builder.Build();
+    WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-await app.ApplyMigrations();
-await app.SeedDatabase();
+    builder.Services.AddPresentationServices(builder.Configuration);
+    builder.Services.AddInfrastructureServices(builder.Configuration);
 
-app.UseWebApplicationMiddleware();
+    WebApplication app = builder.Build();
 
-await app.RunAsync();
+    await app.ApplyMigrations();
+    await app.SeedDatabase();
+
+    app.UseWebApplicationMiddleware();
+
+    await app.RunAsync();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    await Log.CloseAndFlushAsync();
+}
