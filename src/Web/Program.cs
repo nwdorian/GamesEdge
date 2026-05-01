@@ -1,4 +1,10 @@
+using Infrastructure;
+using Web.Extensions;
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddPresentationServices();
+builder.Services.AddInfrastructureServices(builder.Configuration);
 
 builder.Services.AddControllersWithViews();
 

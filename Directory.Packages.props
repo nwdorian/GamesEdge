@@ -6,6 +6,9 @@
         <!-- Static code analysis -->
         <PackageVersion Include="IDisposableAnalyzers" Version="4.0.8" />
         <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.23.0.137933" />
+        <!-- Infrastructure -->
+        <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.7" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.7" />
         <!-- Tests -->
         <PackageVersion Include="coverlet.collector" Version="10.0.0" />
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
