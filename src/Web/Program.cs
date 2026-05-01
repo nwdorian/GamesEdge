@@ -3,7 +3,7 @@ using Web.Extensions;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddPresentationServices();
+builder.Services.AddPresentationServices(builder.Configuration);
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
 WebApplication app = builder.Build();

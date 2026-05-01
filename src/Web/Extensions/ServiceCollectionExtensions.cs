@@ -2,14 +2,16 @@ using Infrastructure.Authorization;
 using Infrastructure.Database;
 using Infrastructure.Users;
 using Microsoft.AspNetCore.Identity;
+using Serilog;
 
 namespace Web.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static void AddPresentationServices(this IServiceCollection services)
+    public static void AddPresentationServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddIdentityServices();
+        services.AddSerilogServices(configuration);
         services.AddControllersWithViews();
 
         services.ConfigureIdentityOptions();
@@ -20,6 +22,11 @@ public static class ServiceCollectionExtensions
     private static void AddIdentityServices(this IServiceCollection services)
     {
         services.AddIdentity<User, Role>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+    }
+
+    private static void AddSerilogServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddSerilog((services, lc) => lc.ReadFrom.Configuration(configuration));
     }
 
     private static void ConfigureIdentityOptions(this IServiceCollection services)
