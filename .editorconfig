@@ -177,11 +177,3 @@ dotnet_diagnostic.CA1000.severity = none
 
 # CA1711: Identifiers should not have incorrect suffix
 dotnet_diagnostic.CA1711.severity = none
-
-[**/Result.cs]
-# CA1000: Do not declare static members on generic types
-dotnet_diagnostic.CA1000.severity = none
-
-[**/Migrations/*.cs]
-# IDE0161 Use file-scoped namespace (EF Core migrations are auto-generated with block-scoped namespace)
-dotnet_diagnostic.IDE0161.severity = none
