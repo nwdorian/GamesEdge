@@ -2,4 +2,14 @@
     <ItemGroup>
         <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Extensions\" />
+        <Folder Include="Models\Users\" />
+        <Folder Include="Views\Account\" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
+        <PackageReference Include="Serilog.AspNetCore" />
+        <PackageReference Include="Serilog.Sinks.Console" />
+    </ItemGroup>
 </Project>

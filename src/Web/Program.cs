@@ -1,22 +1,35 @@
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+using System.Globalization;
+using Infrastructure;
+using Serilog;
+using Web.Extensions;
 
-builder.Services.AddControllersWithViews();
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console(formatProvider: CultureInfo.CurrentCulture)
+    .CreateBootstrapLogger();
 
-WebApplication app = builder.Build();
-
-if (!app.Environment.IsDevelopment())
+try
 {
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
+    Log.Information("Starting application...");
+
+    WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+    builder.Services.AddPresentationServices(builder.Configuration);
+    builder.Services.AddInfrastructureServices(builder.Configuration);
+
+    WebApplication app = builder.Build();
+
+    await app.ApplyMigrations();
+    await app.SeedDatabase();
+
+    app.UseWebApplicationMiddleware();
+
+    await app.RunAsync();
 }
-
-app.UseHttpsRedirection();
-app.UseRouting();
-
-app.UseAuthorization();
-
-app.MapStaticAssets();
-
-app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}").WithStaticAssets();
-
-await app.RunAsync();
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    await Log.CloseAndFlushAsync();
+}
