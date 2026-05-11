@@ -6,7 +6,7 @@ using Web.Models.Users;
 
 namespace Web.Controllers;
 
-public class AccountController(UserManager<User> userManager) : Controller
+public class AccountController(UserManager<User> userManager, SignInManager<User> signInManager) : Controller
 {
     [HttpGet]
     public IActionResult Register()
@@ -38,5 +38,42 @@ public class AccountController(UserManager<User> userManager) : Controller
         await userManager.AddToRoleAsync(user, Roles.Staff);
 
         return RedirectToAction(nameof(HomeController.Index), "Home");
+    }
+
+    [HttpGet]
+    public IActionResult Login(string? returnUrl = null)
+    {
+        ViewData["ReturnUrl"] = returnUrl;
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Login(UserLogin input, string? returnUrl = null)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(input);
+        }
+
+        Microsoft.AspNetCore.Identity.SignInResult result = await signInManager.PasswordSignInAsync(
+            input.Email,
+            input.Password,
+            input.RememberMe,
+            false
+        );
+
+        if (!result.Succeeded)
+        {
+            ModelState.AddModelError(string.Empty, "Invalid login.");
+            return View();
+        }
+
+        if (returnUrl is null)
+        {
+            return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+
+        return LocalRedirect(returnUrl);
     }
 }
