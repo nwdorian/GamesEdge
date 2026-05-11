@@ -1,4 +1,7 @@
+using Infrastructure.Authentication;
 using Infrastructure.Database;
+using Infrastructure.Users;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +14,7 @@ public static class DependencyInjection
     {
         services.AddDatabase(configuration);
         services.AddScoped<DataSeeder>();
+        services.AddScoped<IUserClaimsPrincipalFactory<User>, CustomClaimsFactory>();
     }
 
     private static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
