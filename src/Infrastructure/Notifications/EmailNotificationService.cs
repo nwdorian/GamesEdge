@@ -15,4 +15,26 @@ public class EmailNotificationService(IEmailService emailService) : IEmailNotifi
 
         await emailService.SendEmail(emailRequest);
     }
+
+    public async Task SendRegisterConfirmationEmail(RegisterConfirmationEmail registerConfirmationEmail)
+    {
+        EmailRequest emailRequest = new(
+            registerConfirmationEmail.EmailTo,
+            "Email confirmation link",
+            $"Please confirm your account by <a href='{registerConfirmationEmail.CallbackUrl}'>clicking here</a>."
+        );
+
+        await emailService.SendEmail(emailRequest);
+    }
+
+    public async Task SendWelcomeEmail(WelcomeEmail welcomeEmail)
+    {
+        EmailRequest emailRequest = new(
+            welcomeEmail.EmailTo,
+            "Welcome to Games Edge!",
+            $"Welcome to Games Edge, <br><br>you have successfully registered with {welcomeEmail.EmailTo} email."
+        );
+
+        await emailService.SendEmail(emailRequest);
+    }
 }
