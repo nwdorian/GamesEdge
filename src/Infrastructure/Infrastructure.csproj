@@ -12,6 +12,7 @@
         <Folder Include="Authorization\" />
         <Folder Include="Database\" />
         <Folder Include="Emails\" />
+        <Folder Include="Notifications\" />
         <Folder Include="Users\" />
     </ItemGroup>
 </Project>
