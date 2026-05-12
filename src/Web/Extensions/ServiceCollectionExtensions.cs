@@ -1,7 +1,10 @@
+using Application.Emails;
 using Infrastructure.Authorization;
 using Infrastructure.Database;
+using Infrastructure.Emails;
 using Infrastructure.Users;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Serilog;
 
 namespace Web.Extensions;
@@ -12,6 +15,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddIdentityServices();
         services.AddSerilogServices(configuration);
+        services.AddEmailServices();
         services.AddControllersWithViews();
 
         services.ConfigureIdentityOptions();
@@ -27,6 +31,21 @@ public static class ServiceCollectionExtensions
     private static void AddSerilogServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSerilog((services, lc) => lc.ReadFrom.Configuration(configuration));
+    }
+
+    private static void AddEmailServices(this IServiceCollection services)
+    {
+        services
+            .AddOptions<SmtpSettings>()
+            .BindConfiguration(SmtpSettings.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddScoped<IEmailService>(sp =>
+        {
+            SmtpSettings settings = sp.GetRequiredService<IOptions<SmtpSettings>>().Value;
+            return new EmailService(settings);
+        });
     }
 
     private static void ConfigureIdentityOptions(this IServiceCollection services)
