@@ -3,6 +3,7 @@
         <ProjectReference Include="..\Application\Application.csproj" />
     </ItemGroup>
     <ItemGroup>
+        <PackageReference Include="MailKit" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
     </ItemGroup>
@@ -10,6 +11,8 @@
         <Folder Include="Authentication\" />
         <Folder Include="Authorization\" />
         <Folder Include="Database\" />
+        <Folder Include="Emails\" />
+        <Folder Include="Notifications\" />
         <Folder Include="Users\" />
     </ItemGroup>
 </Project>

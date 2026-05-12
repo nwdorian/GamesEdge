@@ -1,5 +1,7 @@
+using Application.Notifications;
 using Infrastructure.Authentication;
 using Infrastructure.Database;
+using Infrastructure.Notifications;
 using Infrastructure.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +17,7 @@ public static class DependencyInjection
         services.AddDatabase(configuration);
         services.AddScoped<DataSeeder>();
         services.AddScoped<IUserClaimsPrincipalFactory<User>, CustomClaimsFactory>();
+        services.AddScoped<IEmailNotificationService, EmailNotificationService>();
     }
 
     private static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
