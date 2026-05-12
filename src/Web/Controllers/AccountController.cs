@@ -41,9 +41,44 @@ public class AccountController(
             return View(input);
         }
 
+        string token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+        string? callback = Url.Action(
+            nameof(ConfirmEmail),
+            "Account",
+            new { token, email = user.Email },
+            Request.Scheme
+        );
+
+        RegisterConfirmationEmail registerConfirmationEmail = new(user.Email!, callback!);
+        await emailNotificationService.SendRegisterConfirmationEmail(registerConfirmationEmail);
+
         await userManager.AddToRoleAsync(user, Roles.Staff);
 
-        return RedirectToAction(nameof(HomeController.Index), "Home");
+        return RedirectToAction(nameof(SuccessRegistration));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ConfirmEmail(string token, string email)
+    {
+        User? user = await userManager.FindByEmailAsync(email);
+        if (user is null)
+        {
+            return View(nameof(Error));
+        }
+
+        IdentityResult result = await userManager.ConfirmEmailAsync(user, token);
+        if (!result.Succeeded)
+        {
+            return View(nameof(Error));
+        }
+
+        return View(nameof(ConfirmEmail));
+    }
+
+    [HttpGet]
+    public IActionResult SuccessRegistration()
+    {
+        return View();
     }
 
     [HttpGet]
@@ -170,6 +205,12 @@ public class AccountController(
 
     [HttpGet]
     public IActionResult ResetPasswordConfirmation()
+    {
+        return View();
+    }
+
+    [HttpGet]
+    public IActionResult Error()
     {
         return View();
     }

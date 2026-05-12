@@ -15,4 +15,15 @@ public class EmailNotificationService(IEmailService emailService) : IEmailNotifi
 
         await emailService.SendEmail(emailRequest);
     }
+
+    public async Task SendRegisterConfirmationEmail(RegisterConfirmationEmail registerConfirmationEmail)
+    {
+        EmailRequest emailRequest = new(
+            registerConfirmationEmail.EmailTo,
+            "Email confirmation link",
+            $"Please confirm your account by <a href='{registerConfirmationEmail.CallbackUrl}'>clicking here</a>."
+        );
+
+        await emailService.SendEmail(emailRequest);
+    }
 }
