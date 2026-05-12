@@ -26,4 +26,15 @@ public class EmailNotificationService(IEmailService emailService) : IEmailNotifi
 
         await emailService.SendEmail(emailRequest);
     }
+
+    public async Task SendWelcomeEmail(WelcomeEmail welcomeEmail)
+    {
+        EmailRequest emailRequest = new(
+            welcomeEmail.EmailTo,
+            "Welcome to Games Edge!",
+            $"Welcome to Games Edge, <br><br>you have successfully registered with {welcomeEmail.EmailTo} email."
+        );
+
+        await emailService.SendEmail(emailRequest);
+    }
 }

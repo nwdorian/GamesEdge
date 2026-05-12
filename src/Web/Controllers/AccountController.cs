@@ -72,6 +72,9 @@ public class AccountController(
             return View(nameof(Error));
         }
 
+        WelcomeEmail welcomeEmail = new(user.Email!);
+        await emailNotificationService.SendWelcomeEmail(welcomeEmail);
+
         return View(nameof(ConfirmEmail));
     }
 
