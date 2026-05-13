@@ -1,7 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <ItemGroup>
-        <Folder Include="Core\" />
-        <Folder Include="Core\Abstractions\" />
         <Folder Include="Games\" />
     </ItemGroup>
 </Project>
