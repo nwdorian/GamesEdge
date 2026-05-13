@@ -35,19 +35,24 @@ public class GamesConfiguration : IEntityTypeConfiguration<Game>
             .WithMany()
             .HasForeignKey(g => g.DeletedBy)
             .IsRequired(false)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(g => g.CreatedOnUtc).IsRequired();
 
         builder.Property(g => g.UpdatedOnUtc).IsRequired(false);
 
-        builder.HasOne<User>().WithMany().HasForeignKey(g => g.CreatedBy).IsRequired().OnDelete(DeleteBehavior.SetNull);
+        builder
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(g => g.CreatedBy)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder
             .HasOne<User>()
             .WithMany()
             .HasForeignKey(g => g.UpdatedBy)
             .IsRequired(false)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
