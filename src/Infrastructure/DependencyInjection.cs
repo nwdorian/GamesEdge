@@ -34,6 +34,7 @@ public static class DependencyInjection
             ?? throw new InvalidOperationException("Connection string 'Default' not found.");
 
         services.AddScoped<SoftDeleteInterceptor>();
+        services.AddScoped<UpdateAuditableInterceptor>();
 
         services.AddDbContext<ApplicationDbContext>(
             (sp, options) =>
@@ -41,6 +42,7 @@ public static class DependencyInjection
                 options.UseSqlServer(connectionString).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 
                 options.AddInterceptors(sp.GetRequiredService<SoftDeleteInterceptor>());
+                options.AddInterceptors(sp.GetRequiredService<UpdateAuditableInterceptor>());
             }
         );
     }

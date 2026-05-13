@@ -11,7 +11,7 @@ public class Game : ISoftDeletable, IAuditable
     public DateOnly ReleaseDate { get; set; }
     public DateTime? DeletedOnUtc { get; }
     public bool IsDeleted { get; }
-    public Guid DeletedBy { get; }
+    public Guid? DeletedBy { get; }
     public DateTime CreatedOnUtc { get; }
     public DateTime? UpdatedOnUtc { get; }
     public Guid CreatedBy { get; }

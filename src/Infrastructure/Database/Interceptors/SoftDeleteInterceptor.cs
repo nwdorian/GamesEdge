@@ -33,9 +33,9 @@ public class SoftDeleteInterceptor(IDateTimeProvider dateTimeProvider, IUserCont
         foreach (EntityEntry<ISoftDeletable> entry in entries)
         {
             entry.State = EntityState.Modified;
-            entry.Property(nameof(ISoftDeletable.IsDeleted)).CurrentValue = true;
-            entry.Property(nameof(ISoftDeletable.DeletedOnUtc)).CurrentValue = dateTimeProvider.UtcNow;
-            entry.Property(nameof(ISoftDeletable.DeletedBy)).CurrentValue = userContext.UserId;
+            entry.SetPropertyValue(nameof(ISoftDeletable.IsDeleted), true);
+            entry.SetPropertyValue(nameof(ISoftDeletable.DeletedOnUtc), dateTimeProvider.UtcNow);
+            entry.SetPropertyValue(nameof(ISoftDeletable.DeletedBy), userContext.UserId);
         }
     }
 }

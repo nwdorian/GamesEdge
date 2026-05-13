@@ -30,6 +30,8 @@ public class GamesConfiguration : IEntityTypeConfiguration<Game>
 
         builder.Property(g => g.DeletedOnUtc).IsRequired(false);
 
+        builder.Property(g => g.DeletedBy).IsRequired(false);
+
         builder.Property(g => g.CreatedOnUtc).IsRequired();
 
         builder.Property(g => g.UpdatedOnUtc).IsRequired(false);
