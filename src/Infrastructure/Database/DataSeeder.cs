@@ -1,11 +1,23 @@
+using Domain.Core.Abstractions;
+using Domain.Games;
 using Infrastructure.Authorization;
+using Infrastructure.Database.Interceptors;
+using Infrastructure.Games;
 using Infrastructure.Users;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Database;
 
-public class DataSeeder(UserManager<User> userManager, RoleManager<Role> roleManager, ILogger<DataSeeder> logger)
+public class DataSeeder(
+    UserManager<User> userManager,
+    RoleManager<Role> roleManager,
+    IConfiguration configuration,
+    ILogger<DataSeeder> logger
+)
 {
     public async Task SeedAsync()
     {
@@ -14,6 +26,8 @@ public class DataSeeder(UserManager<User> userManager, RoleManager<Role> roleMan
 
         await SeedAdminUser();
         await SeedStaffUser();
+
+        await SeedGames();
     }
 
     private async Task SeedStaffRole()
@@ -71,6 +85,7 @@ public class DataSeeder(UserManager<User> userManager, RoleManager<Role> roleMan
         if (user is not null)
         {
             logger.LogInformation("Staff user already exists");
+            return;
         }
 
         User staff = UserFaker.CreateStaffUser();
@@ -87,5 +102,46 @@ public class DataSeeder(UserManager<User> userManager, RoleManager<Role> roleMan
         await userManager.AddToRoleAsync(staff, Roles.Staff);
 
         logger.LogInformation("Staff user created");
+    }
+
+    private async Task SeedGames()
+    {
+        using ApplicationDbContext seedContext = CreateSeedContext();
+
+        if (await seedContext.Set<Game>().AnyAsync())
+        {
+            logger.LogInformation("Games already seeded");
+            return;
+        }
+
+        List<Game> games = GameFaker.CreateGames();
+
+        seedContext.Set<Game>().AddRange(games);
+
+        IEnumerable<EntityEntry<Game>> entries = seedContext.ChangeTracker.Entries<Game>();
+
+        foreach (EntityEntry<Game> entry in entries)
+        {
+            entry.SetPropertyValue(nameof(ISoftDeletable.IsDeleted), false);
+            entry.SetPropertyValue(nameof(IAuditable.CreatedBy), UserFaker.AdminId);
+            entry.SetPropertyValue(nameof(IAuditable.CreatedOnUtc), DateTime.UtcNow);
+        }
+
+        await seedContext.SaveChangesAsync();
+
+        logger.LogInformation("Seeded {Quantity} games", games.Count);
+    }
+
+    private ApplicationDbContext CreateSeedContext()
+    {
+        DbContextOptionsBuilder<ApplicationDbContext> builder = new();
+
+        string? connectionString =
+            configuration.GetConnectionString("Default")
+            ?? throw new InvalidOperationException("Connection string 'Default' not found.");
+
+        builder.UseSqlServer(connectionString);
+
+        return new ApplicationDbContext(builder.Options);
     }
 }

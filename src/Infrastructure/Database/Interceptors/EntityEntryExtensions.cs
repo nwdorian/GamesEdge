@@ -6,6 +6,6 @@ public static class EntityEntryExtensions
 {
     public static void SetPropertyValue<T>(this EntityEntry entry, string propertyName, T value)
     {
-        entry.Property(nameof(propertyName)).CurrentValue = value;
+        entry.Property(propertyName).CurrentValue = value;
     }
 }
