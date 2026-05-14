@@ -13,6 +13,7 @@ public class DataSeeder(UserManager<User> userManager, RoleManager<Role> roleMan
         await SeedAdminRole();
 
         await SeedAdminUser();
+        await SeedStaffUser();
     }
 
     private async Task SeedStaffRole()
@@ -62,5 +63,29 @@ public class DataSeeder(UserManager<User> userManager, RoleManager<Role> roleMan
         await userManager.AddToRoleAsync(admin, Roles.Admin);
 
         logger.LogInformation("Admin user created");
+    }
+
+    private async Task SeedStaffUser()
+    {
+        User? user = await userManager.FindByEmailAsync(UserFaker.StaffEmail);
+        if (user is not null)
+        {
+            logger.LogInformation("Staff user already exists");
+        }
+
+        User staff = UserFaker.CreateStaffUser();
+
+        IdentityResult result = await userManager.CreateAsync(staff, "Staff123!");
+        if (!result.Succeeded)
+        {
+            logger.LogError(
+                "Failed to create staff user: {Errors}",
+                string.Join(", ", result.Errors.Select(e => e.Description))
+            );
+        }
+
+        await userManager.AddToRoleAsync(staff, Roles.Staff);
+
+        logger.LogInformation("Staff user created");
     }
 }
