@@ -4,7 +4,7 @@
 namespace Infrastructure.Database.Migrations;
 
 /// <inheritdoc />
-public partial class AddIdentityTables : Migration
+public partial class InitialCreate : Migration
 {
     /// <inheritdoc />
     protected override void Up(MigrationBuilder migrationBuilder)
@@ -175,6 +175,50 @@ public partial class AddIdentityTables : Migration
             }
         );
 
+        migrationBuilder.CreateTable(
+            name: "Games",
+            columns: table => new
+            {
+                Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                Name = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                Genre = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                ReleaseDate = table.Column<DateOnly>(type: "date", nullable: false),
+                DeletedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
+                IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                CreatedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                UpdatedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
+                CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+            },
+            constraints: table =>
+            {
+                table.PrimaryKey("PK_Games", x => x.Id);
+                table.ForeignKey(
+                    name: "FK_Games_AspNetUsers_CreatedBy",
+                    column: x => x.CreatedBy,
+                    principalTable: "AspNetUsers",
+                    principalColumn: "Id",
+                    onDelete: ReferentialAction.Restrict
+                );
+                table.ForeignKey(
+                    name: "FK_Games_AspNetUsers_DeletedBy",
+                    column: x => x.DeletedBy,
+                    principalTable: "AspNetUsers",
+                    principalColumn: "Id",
+                    onDelete: ReferentialAction.Restrict
+                );
+                table.ForeignKey(
+                    name: "FK_Games_AspNetUsers_UpdatedBy",
+                    column: x => x.UpdatedBy,
+                    principalTable: "AspNetUsers",
+                    principalColumn: "Id",
+                    onDelete: ReferentialAction.Restrict
+                );
+            }
+        );
+
         migrationBuilder.CreateIndex(name: "IX_AspNetRoleClaims_RoleId", table: "AspNetRoleClaims", column: "RoleId");
 
         migrationBuilder.CreateIndex(
@@ -200,6 +244,16 @@ public partial class AddIdentityTables : Migration
             unique: true,
             filter: "[NormalizedUserName] IS NOT NULL"
         );
+
+        migrationBuilder.CreateIndex(name: "IX_Games_CreatedBy", table: "Games", column: "CreatedBy");
+
+        migrationBuilder.CreateIndex(name: "IX_Games_DeletedBy", table: "Games", column: "DeletedBy");
+
+        migrationBuilder.CreateIndex(name: "IX_Games_IsDeleted", table: "Games", column: "IsDeleted");
+
+        migrationBuilder.CreateIndex(name: "IX_Games_Name", table: "Games", column: "Name", unique: true);
+
+        migrationBuilder.CreateIndex(name: "IX_Games_UpdatedBy", table: "Games", column: "UpdatedBy");
     }
 
     /// <inheritdoc />
@@ -214,6 +268,8 @@ public partial class AddIdentityTables : Migration
         migrationBuilder.DropTable(name: "AspNetUserRoles");
 
         migrationBuilder.DropTable(name: "AspNetUserTokens");
+
+        migrationBuilder.DropTable(name: "Games");
 
         migrationBuilder.DropTable(name: "AspNetRoles");
 

@@ -81,7 +81,7 @@ namespace Infrastructure.Database.Migrations
 
                     b.HasIndex("UpdatedBy");
 
-                    b.ToTable("Game");
+                    b.ToTable("Games");
                 });
 
             modelBuilder.Entity("Infrastructure.Authorization.Role", b =>
