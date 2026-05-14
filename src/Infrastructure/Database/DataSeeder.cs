@@ -1,18 +1,21 @@
 using Infrastructure.Authorization;
+using Infrastructure.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Database;
 
-public class DataSeeder(RoleManager<Role> roleManager, ILogger<DataSeeder> logger)
+public class DataSeeder(UserManager<User> userManager, RoleManager<Role> roleManager, ILogger<DataSeeder> logger)
 {
     public async Task SeedAsync()
     {
         await SeedStaffRole();
         await SeedAdminRole();
+
+        await SeedAdminUser();
     }
 
-    private async Task SeedAdminRole()
+    private async Task SeedStaffRole()
     {
         if (await roleManager.RoleExistsAsync(Roles.Staff))
         {
@@ -24,7 +27,7 @@ public class DataSeeder(RoleManager<Role> roleManager, ILogger<DataSeeder> logge
         logger.LogInformation("{Role} role created", Roles.Staff);
     }
 
-    private async Task SeedStaffRole()
+    private async Task SeedAdminRole()
     {
         if (await roleManager.RoleExistsAsync(Roles.Admin))
         {
@@ -33,6 +36,31 @@ public class DataSeeder(RoleManager<Role> roleManager, ILogger<DataSeeder> logge
         }
 
         await roleManager.CreateAsync(new Role() { Name = Roles.Admin });
-        logger.LogInformation("{Role} role created", Roles.Staff);
+        logger.LogInformation("{Role} role created", Roles.Admin);
+    }
+
+    private async Task SeedAdminUser()
+    {
+        User? user = await userManager.FindByEmailAsync(UserFaker.AdminEmail);
+        if (user is not null)
+        {
+            logger.LogInformation("Admin user already exists");
+            return;
+        }
+
+        User admin = UserFaker.CreateAdminUser();
+
+        IdentityResult result = await userManager.CreateAsync(admin, "Admin123!");
+        if (!result.Succeeded)
+        {
+            logger.LogError(
+                "Failed to create admin user: {Errors}",
+                string.Join(", ", result.Errors.Select(e => e.Description))
+            );
+        }
+
+        await userManager.AddToRoleAsync(admin, Roles.Admin);
+
+        logger.LogInformation("Admin user created");
     }
 }
