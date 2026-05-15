@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
+
 #nullable disable
 
 namespace Infrastructure.Database.Migrations;
@@ -16,21 +18,27 @@ public partial class InitialCreate : Migration
                 Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                 Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                 NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
             },
             constraints: table =>
             {
                 table.PrimaryKey("PK_AspNetRoles", x => x.Id);
-            }
-        );
+            });
 
         migrationBuilder.CreateTable(
             name: "AspNetUsers",
             columns: table => new
             {
                 Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                FirstName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                LastName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: true),
+                DeletedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
+                IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                DeletedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                CreatedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                UpdatedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
+                CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                 UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                 NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                 Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -44,22 +52,40 @@ public partial class InitialCreate : Migration
                 TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
                 LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
                 LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
-                AccessFailedCount = table.Column<int>(type: "int", nullable: false),
+                AccessFailedCount = table.Column<int>(type: "int", nullable: false)
             },
             constraints: table =>
             {
                 table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-            }
-        );
+                table.ForeignKey(
+                    name: "FK_AspNetUsers_AspNetUsers_CreatedBy",
+                    column: x => x.CreatedBy,
+                    principalTable: "AspNetUsers",
+                    principalColumn: "Id",
+                    onDelete: ReferentialAction.Restrict);
+                table.ForeignKey(
+                    name: "FK_AspNetUsers_AspNetUsers_DeletedBy",
+                    column: x => x.DeletedBy,
+                    principalTable: "AspNetUsers",
+                    principalColumn: "Id",
+                    onDelete: ReferentialAction.Restrict);
+                table.ForeignKey(
+                    name: "FK_AspNetUsers_AspNetUsers_UpdatedBy",
+                    column: x => x.UpdatedBy,
+                    principalTable: "AspNetUsers",
+                    principalColumn: "Id",
+                    onDelete: ReferentialAction.Restrict);
+            });
 
         migrationBuilder.CreateTable(
             name: "AspNetRoleClaims",
             columns: table => new
             {
-                Id = table.Column<int>(type: "int", nullable: false).Annotation("SqlServer:Identity", "1, 1"),
+                Id = table.Column<int>(type: "int", nullable: false)
+                    .Annotation("SqlServer:Identity", "1, 1"),
                 RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                 ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
             },
             constraints: table =>
             {
@@ -69,19 +95,18 @@ public partial class InitialCreate : Migration
                     column: x => x.RoleId,
                     principalTable: "AspNetRoles",
                     principalColumn: "Id",
-                    onDelete: ReferentialAction.Cascade
-                );
-            }
-        );
+                    onDelete: ReferentialAction.Cascade);
+            });
 
         migrationBuilder.CreateTable(
             name: "AspNetUserClaims",
             columns: table => new
             {
-                Id = table.Column<int>(type: "int", nullable: false).Annotation("SqlServer:Identity", "1, 1"),
+                Id = table.Column<int>(type: "int", nullable: false)
+                    .Annotation("SqlServer:Identity", "1, 1"),
                 UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                 ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
             },
             constraints: table =>
             {
@@ -91,10 +116,8 @@ public partial class InitialCreate : Migration
                     column: x => x.UserId,
                     principalTable: "AspNetUsers",
                     principalColumn: "Id",
-                    onDelete: ReferentialAction.Cascade
-                );
-            }
-        );
+                    onDelete: ReferentialAction.Cascade);
+            });
 
         migrationBuilder.CreateTable(
             name: "AspNetUserLogins",
@@ -103,7 +126,7 @@ public partial class InitialCreate : Migration
                 LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
                 ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
                 ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
             },
             constraints: table =>
             {
@@ -113,17 +136,15 @@ public partial class InitialCreate : Migration
                     column: x => x.UserId,
                     principalTable: "AspNetUsers",
                     principalColumn: "Id",
-                    onDelete: ReferentialAction.Cascade
-                );
-            }
-        );
+                    onDelete: ReferentialAction.Cascade);
+            });
 
         migrationBuilder.CreateTable(
             name: "AspNetUserRoles",
             columns: table => new
             {
                 UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
             },
             constraints: table =>
             {
@@ -133,17 +154,14 @@ public partial class InitialCreate : Migration
                     column: x => x.RoleId,
                     principalTable: "AspNetRoles",
                     principalColumn: "Id",
-                    onDelete: ReferentialAction.Cascade
-                );
+                    onDelete: ReferentialAction.Cascade);
                 table.ForeignKey(
                     name: "FK_AspNetUserRoles_AspNetUsers_UserId",
                     column: x => x.UserId,
                     principalTable: "AspNetUsers",
                     principalColumn: "Id",
-                    onDelete: ReferentialAction.Cascade
-                );
-            }
-        );
+                    onDelete: ReferentialAction.Cascade);
+            });
 
         migrationBuilder.CreateTable(
             name: "AspNetUserTokens",
@@ -152,28 +170,18 @@ public partial class InitialCreate : Migration
                 UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                 LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
                 Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                Value = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
             },
             constraints: table =>
             {
-                table.PrimaryKey(
-                    "PK_AspNetUserTokens",
-                    x => new
-                    {
-                        x.UserId,
-                        x.LoginProvider,
-                        x.Name,
-                    }
-                );
+                table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
                 table.ForeignKey(
                     name: "FK_AspNetUserTokens_AspNetUsers_UserId",
                     column: x => x.UserId,
                     principalTable: "AspNetUsers",
                     principalColumn: "Id",
-                    onDelete: ReferentialAction.Cascade
-                );
-            }
-        );
+                    onDelete: ReferentialAction.Cascade);
+            });
 
         migrationBuilder.CreateTable(
             name: "Games",
@@ -190,7 +198,7 @@ public partial class InitialCreate : Migration
                 CreatedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
                 UpdatedOnUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
                 CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
             },
             constraints: table =>
             {
@@ -200,79 +208,132 @@ public partial class InitialCreate : Migration
                     column: x => x.CreatedBy,
                     principalTable: "AspNetUsers",
                     principalColumn: "Id",
-                    onDelete: ReferentialAction.Restrict
-                );
+                    onDelete: ReferentialAction.Restrict);
                 table.ForeignKey(
                     name: "FK_Games_AspNetUsers_DeletedBy",
                     column: x => x.DeletedBy,
                     principalTable: "AspNetUsers",
                     principalColumn: "Id",
-                    onDelete: ReferentialAction.Restrict
-                );
+                    onDelete: ReferentialAction.Restrict);
                 table.ForeignKey(
                     name: "FK_Games_AspNetUsers_UpdatedBy",
                     column: x => x.UpdatedBy,
                     principalTable: "AspNetUsers",
                     principalColumn: "Id",
-                    onDelete: ReferentialAction.Restrict
-                );
-            }
-        );
+                    onDelete: ReferentialAction.Restrict);
+            });
 
-        migrationBuilder.CreateIndex(name: "IX_AspNetRoleClaims_RoleId", table: "AspNetRoleClaims", column: "RoleId");
+        migrationBuilder.CreateIndex(
+            name: "IX_AspNetRoleClaims_RoleId",
+            table: "AspNetRoleClaims",
+            column: "RoleId");
 
         migrationBuilder.CreateIndex(
             name: "RoleNameIndex",
             table: "AspNetRoles",
             column: "NormalizedName",
             unique: true,
-            filter: "[NormalizedName] IS NOT NULL"
-        );
+            filter: "[NormalizedName] IS NOT NULL");
 
-        migrationBuilder.CreateIndex(name: "IX_AspNetUserClaims_UserId", table: "AspNetUserClaims", column: "UserId");
+        migrationBuilder.CreateIndex(
+            name: "IX_AspNetUserClaims_UserId",
+            table: "AspNetUserClaims",
+            column: "UserId");
 
-        migrationBuilder.CreateIndex(name: "IX_AspNetUserLogins_UserId", table: "AspNetUserLogins", column: "UserId");
+        migrationBuilder.CreateIndex(
+            name: "IX_AspNetUserLogins_UserId",
+            table: "AspNetUserLogins",
+            column: "UserId");
 
-        migrationBuilder.CreateIndex(name: "IX_AspNetUserRoles_RoleId", table: "AspNetUserRoles", column: "RoleId");
+        migrationBuilder.CreateIndex(
+            name: "IX_AspNetUserRoles_RoleId",
+            table: "AspNetUserRoles",
+            column: "RoleId");
 
-        migrationBuilder.CreateIndex(name: "EmailIndex", table: "AspNetUsers", column: "NormalizedEmail");
+        migrationBuilder.CreateIndex(
+            name: "EmailIndex",
+            table: "AspNetUsers",
+            column: "NormalizedEmail");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_AspNetUsers_CreatedBy",
+            table: "AspNetUsers",
+            column: "CreatedBy");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_AspNetUsers_DeletedBy",
+            table: "AspNetUsers",
+            column: "DeletedBy");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_AspNetUsers_IsDeleted",
+            table: "AspNetUsers",
+            column: "IsDeleted");
+
+        migrationBuilder.CreateIndex(
+            name: "IX_AspNetUsers_UpdatedBy",
+            table: "AspNetUsers",
+            column: "UpdatedBy");
 
         migrationBuilder.CreateIndex(
             name: "UserNameIndex",
             table: "AspNetUsers",
             column: "NormalizedUserName",
             unique: true,
-            filter: "[NormalizedUserName] IS NOT NULL"
-        );
+            filter: "[NormalizedUserName] IS NOT NULL");
 
-        migrationBuilder.CreateIndex(name: "IX_Games_CreatedBy", table: "Games", column: "CreatedBy");
+        migrationBuilder.CreateIndex(
+            name: "IX_Games_CreatedBy",
+            table: "Games",
+            column: "CreatedBy");
 
-        migrationBuilder.CreateIndex(name: "IX_Games_DeletedBy", table: "Games", column: "DeletedBy");
+        migrationBuilder.CreateIndex(
+            name: "IX_Games_DeletedBy",
+            table: "Games",
+            column: "DeletedBy");
 
-        migrationBuilder.CreateIndex(name: "IX_Games_IsDeleted", table: "Games", column: "IsDeleted");
+        migrationBuilder.CreateIndex(
+            name: "IX_Games_IsDeleted",
+            table: "Games",
+            column: "IsDeleted");
 
-        migrationBuilder.CreateIndex(name: "IX_Games_Name", table: "Games", column: "Name", unique: true);
+        migrationBuilder.CreateIndex(
+            name: "IX_Games_Name",
+            table: "Games",
+            column: "Name",
+            unique: true);
 
-        migrationBuilder.CreateIndex(name: "IX_Games_UpdatedBy", table: "Games", column: "UpdatedBy");
+        migrationBuilder.CreateIndex(
+            name: "IX_Games_UpdatedBy",
+            table: "Games",
+            column: "UpdatedBy");
     }
 
     /// <inheritdoc />
     protected override void Down(MigrationBuilder migrationBuilder)
     {
-        migrationBuilder.DropTable(name: "AspNetRoleClaims");
+        migrationBuilder.DropTable(
+            name: "AspNetRoleClaims");
 
-        migrationBuilder.DropTable(name: "AspNetUserClaims");
+        migrationBuilder.DropTable(
+            name: "AspNetUserClaims");
 
-        migrationBuilder.DropTable(name: "AspNetUserLogins");
+        migrationBuilder.DropTable(
+            name: "AspNetUserLogins");
 
-        migrationBuilder.DropTable(name: "AspNetUserRoles");
+        migrationBuilder.DropTable(
+            name: "AspNetUserRoles");
 
-        migrationBuilder.DropTable(name: "AspNetUserTokens");
+        migrationBuilder.DropTable(
+            name: "AspNetUserTokens");
 
-        migrationBuilder.DropTable(name: "Games");
+        migrationBuilder.DropTable(
+            name: "Games");
 
-        migrationBuilder.DropTable(name: "AspNetRoles");
+        migrationBuilder.DropTable(
+            name: "AspNetRoles");
 
-        migrationBuilder.DropTable(name: "AspNetUsers");
+        migrationBuilder.DropTable(
+            name: "AspNetUsers");
     }
 }
