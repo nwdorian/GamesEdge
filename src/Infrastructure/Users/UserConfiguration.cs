@@ -1,23 +1,15 @@
-using Domain.Games;
 using Infrastructure.Database;
-using Infrastructure.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Games;
+namespace Infrastructure.Users;
 
-public class GamesConfiguration : IEntityTypeConfiguration<Game>
+public class UserConfiguration : IEntityTypeConfiguration<User>
 {
-    public void Configure(EntityTypeBuilder<Game> builder)
+    public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.HasKey(g => g.Id);
-
-        builder.Property(g => g.Name).HasMaxLength(150).IsRequired();
-        builder.HasIndex(g => g.Name).IsUnique();
-
-        builder.Property(g => g.Genre).HasMaxLength(50).IsRequired();
-        builder.Property(g => g.Price).HasPrecision(18, 2).IsRequired();
-        builder.Property(g => g.ReleaseDate).IsRequired();
+        builder.Property(u => u.FirstName).HasMaxLength(150).IsRequired(false);
+        builder.Property(u => u.LastName).HasMaxLength(150).IsRequired(false);
 
         builder.HasIndex(g => g.IsDeleted);
         builder.HasQueryFilter(GlobalFilters.SoftDelete, g => !g.IsDeleted);
