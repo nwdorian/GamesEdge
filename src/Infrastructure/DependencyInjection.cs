@@ -1,3 +1,4 @@
+using Application.Database;
 using Application.Notifications;
 using Application.Users;
 using Domain.Core.Abstractions;
@@ -45,5 +46,7 @@ public static class DependencyInjection
                 options.AddInterceptors(sp.GetRequiredService<UpdateAuditableInterceptor>());
             }
         );
+
+        services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
     }
 }
