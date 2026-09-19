@@ -6,14 +6,6 @@ html {
     html {
         font-size: 16px;
     }
-
-    .games-search {
-        flex: 2 1 0;
-    }
-
-    .games-sorting {
-        flex: 2 1 0;
-    }
 }
 
 .btn:focus,
@@ -44,31 +36,4 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder,
 .form-floating > .form-control:focus::placeholder {
     text-align: start;
-}
-
-.games-filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    align-items: flex-end;
-    padding-top: 0rem;
-    padding-bottom: 0.75rem;
-}
-
-.games-filters .form-control,
-.games-filters .form-select {
-    min-height: calc(1.5em + 0.75rem + 2px);
-    width: 100%;
-}
-
-.games-search {
-    flex: 1 1 100%;
-    min-width: 0;
-    display: flex;
-    gap: 0.5rem;
-}
-
-.games-sorting {
-    flex: 1 1 100%;
-    min-width: 200px;
 }
