@@ -1,7 +1,12 @@
+using Application.Database;
 using Application.Notifications;
+using Application.Users;
+using Domain.Core.Abstractions;
 using Infrastructure.Authentication;
 using Infrastructure.Database;
+using Infrastructure.Database.Interceptors;
 using Infrastructure.Notifications;
+using Infrastructure.Time;
 using Infrastructure.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +23,9 @@ public static class DependencyInjection
         services.AddScoped<DataSeeder>();
         services.AddScoped<IUserClaimsPrincipalFactory<User>, CustomClaimsFactory>();
         services.AddScoped<IEmailNotificationService, EmailNotificationService>();
+        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+        services.AddHttpContextAccessor();
+        services.AddScoped<IUserContext, UserContext>();
     }
 
     private static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
@@ -26,8 +34,19 @@ public static class DependencyInjection
             configuration.GetConnectionString("Default")
             ?? throw new InvalidOperationException("Connection string 'Default' not found.");
 
-        services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(connectionString).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
+        services.AddScoped<SoftDeleteInterceptor>();
+        services.AddScoped<UpdateAuditableInterceptor>();
+
+        services.AddDbContext<ApplicationDbContext>(
+            (sp, options) =>
+            {
+                options.UseSqlServer(connectionString).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+
+                options.AddInterceptors(sp.GetRequiredService<SoftDeleteInterceptor>());
+                options.AddInterceptors(sp.GetRequiredService<UpdateAuditableInterceptor>());
+            }
         );
+
+        services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
     }
 }

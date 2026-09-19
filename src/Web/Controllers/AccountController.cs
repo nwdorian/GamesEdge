@@ -29,7 +29,13 @@ public class AccountController(
             return View(input);
         }
 
-        User user = new() { UserName = input.Email, Email = input.Email };
+        User user = new()
+        {
+            FirstName = input.FirstName,
+            LastName = input.LastName,
+            UserName = input.Email,
+            Email = input.Email,
+        };
         IdentityResult result = await userManager.CreateAsync(user, input.Password);
         if (!result.Succeeded)
         {

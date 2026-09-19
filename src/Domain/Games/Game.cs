@@ -1,12 +1,14 @@
 using Domain.Core.Abstractions;
-using Microsoft.AspNetCore.Identity;
 
-namespace Infrastructure.Users;
+namespace Domain.Games;
 
-public class User : IdentityUser<Guid>, IAuditable, ISoftDeletable
+public class Game : ISoftDeletable, IAuditable
 {
-    public string? FirstName { get; set; }
-    public string? LastName { get; set; }
+    public Guid Id { get; set; }
+    public required string Name { get; set; }
+    public required string Genre { get; set; }
+    public decimal Price { get; set; }
+    public DateOnly ReleaseDate { get; set; }
     public DateTime? DeletedOnUtc { get; }
     public bool IsDeleted { get; }
     public Guid? DeletedBy { get; }
