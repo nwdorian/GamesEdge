@@ -5,6 +5,29 @@
     ViewData["Title"] = "Home Page";
 }
 
+<div class="card mb-3">
+    <div class="card-body games-filters">
+        <form class="d-flex flex-wrap gap-2 align-items-end" id="filters-form" asp-controller="Games" asp-action="Index"
+              method="get">
+            <div class="games-search">
+                <input id="search-input" class="form-control" type="text" name="SearchTerm"
+                       value="@Model.Filter?.SearchTerm" placeholder="Enter name" />
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+
+            <div class="games-sorting">
+                <label for="sort-by">Sort:</label>
+                <div class="d-flex gap-1">
+                    <select id="sort-by" class="form-select" name="SortBy" asp-items="Model.SortBy"
+                            onchange="this.form.submit()"></select>
+                    <select class="form-select" name="SortDirection" asp-items="Model.SortDirection"
+                            onchange="this.form.submit()"></select>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 <table class="table">
     <thead>
         <tr>
@@ -67,4 +90,10 @@
             </a>
         </li>
     </ul>
+    <div class="d-flex align-items-center gap-2">
+        <label for="page-size-dropdown" class="mb-0 text-nowrap">Page size:</label>
+        <select class="form-select" id="page-size-dropdown" form="filters-form" name="PageSize"
+                asp-items="Model.PageSizes" onchange="document.getElementById('filters-form').submit()">
+        </select>
+    </div>
 </div>

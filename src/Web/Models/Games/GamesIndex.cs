@@ -1,3 +1,4 @@
+using Application.Games.Pagination;
 using Application.Games.Responses;
 using Application.Pagination;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -12,7 +13,11 @@ public class GamesIndex
 {
     public IReadOnlyList<GamesIndexItem> Games { get; set; } = [];
     public PagingMetadata PagingMetadata { get; set; } = null!;
+    public SelectList SortBy { get; set; } = null!;
+    public SelectList SortDirection { get; set; } = null!;
     public SelectList PageSizes { get; set; } = null!;
+    public GameFilter? Filter { get; set; }
+    public GameSorting? Sorting { get; set; }
 
     public static GamesIndex Create(PagedList<GetGamesPageResponse> page, GetGamesRequest request)
     {
@@ -28,6 +33,29 @@ public class GamesIndex
                 page.HasNextPage
             ),
             PageSizes = new SelectList(PagingDefaults.PageSizeOptions, selectedValue: request.PageSize),
+            SortBy = CreateSortColumnsList(request),
+            SortDirection = new SelectList(Enum.GetValues<SortDirection>(), selectedValue: request.SortDirection),
+            Filter = new GameFilter(request.SearchTerm),
+            Sorting = new GameSorting(request.SortBy, request.SortDirection),
         };
+    }
+
+    private static SelectList CreateSortColumnsList(GetGamesRequest request)
+    {
+        return new SelectList(
+            Enum.GetValues<GameSortingColumn>()
+                .Select(e => new
+                {
+                    Value = e,
+                    Text = e switch
+                    {
+                        GameSortingColumn.ReleaseDate => "Release date",
+                        _ => e.ToString(),
+                    },
+                }),
+            "Value",
+            "Text",
+            selectedValue: request.SortBy
+        );
     }
 }
