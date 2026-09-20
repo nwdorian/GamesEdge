@@ -4,6 +4,7 @@
     </ItemGroup>
     <ItemGroup>
         <Folder Include="Database\" />
+        <Folder Include="Games\Commands\" />
         <Folder Include="Notifications\" />
         <Folder Include="Pagination\" />
         <Folder Include="Users\" />

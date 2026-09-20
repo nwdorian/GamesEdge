@@ -1,8 +1,11 @@
 using Application.Database;
+using Application.Games.Commands;
 using Application.Games.Queries;
 using Application.Games.Responses;
 using Application.Pagination;
+using Domain.Core.Results;
 using Domain.Games;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Games;
 
@@ -31,5 +34,28 @@ public class GameService(IApplicationDbContext dbContext) : IGameService
         ));
 
         return await PagedList<GetGamesPageResponse>.Create(gameResponses, query.Paging, cancellationToken);
+    }
+
+    public async Task<Result> Create(CreateGameCommand command, CancellationToken cancellationToken)
+    {
+        bool nameExists = await dbContext.Games.AnyAsync(g => g.Name == command.Name, cancellationToken);
+        if (nameExists)
+        {
+            return GameErrors.NameAlreadyExists(command.Name);
+        }
+
+        Game game = new()
+        {
+            Id = Guid.NewGuid(),
+            Name = command.Name,
+            Genre = command.Genre,
+            Price = command.Price,
+            ReleaseDate = command.ReleaseDate,
+        };
+
+        dbContext.Games.Add(game);
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
     }
 }
