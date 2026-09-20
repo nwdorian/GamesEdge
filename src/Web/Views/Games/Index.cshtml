@@ -9,6 +9,10 @@
     <div class="card-body py-2">
         <form class="d-flex gap-2 align-items-center" id="filters-form" asp-controller="Games" asp-action="Index"
               method="get">
+            <button type="button" class="btn btn-primary" onclick="loadModal('Games', 'Create')">
+                Add movie
+            </button>
+
             <input id="search-input" class="form-control w-auto" type="text" name="SearchTerm"
                    value="@Model.Filter?.SearchTerm" placeholder="Enter name" />
             <button type="submit" class="btn btn-primary">Search</button>
@@ -93,3 +97,9 @@
         </select>
     </div>
 </div>
+
+<div id="modal-placeholder"></div>
+
+@section Scripts {
+    <script src="~/js/modalManager.js"></script>
+}
