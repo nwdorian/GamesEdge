@@ -36,7 +36,7 @@ public class GameService(IApplicationDbContext dbContext) : IGameService
         return await PagedList<GetGamesPageResponse>.Create(gameResponses, query.Paging, cancellationToken);
     }
 
-    public async Task<Result<GetGameByIdResponse>> GetById(GetMovieByIdQuery query, CancellationToken cancellationToken)
+    public async Task<Result<GetGameByIdResponse>> GetById(GetGameByIdQuery query, CancellationToken cancellationToken)
     {
         GetGameByIdResponse? game = await dbContext
             .Games.Where(g => g.Id == query.Id)

@@ -10,7 +10,7 @@
         <form class="d-flex gap-2 align-items-center" id="filters-form" asp-controller="Games" asp-action="Index"
               method="get">
             <button type="button" class="btn btn-primary" onclick="loadModal('Games', 'Create')">
-                Add movie
+                Add game
             </button>
 
             <input id="search-input" class="form-control w-auto" type="text" name="SearchTerm"
@@ -43,6 +43,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.Games[0].ReleaseDate)
             </th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -60,6 +61,16 @@
                 </td>
                 <td>
                     @Html.DisplayFor(model => game.ReleaseDate)
+                </td>
+                <td class="text-end">
+                    <button type="button" class="btn btn-outline-primary" onclick="loadModal('Games', 'Update', '@game.Id')"
+                            aria-label="Edit game">
+                        <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" onclick="loadModal('Games', 'Delete', '@game.Id')"
+                            aria-label="Delete game">
+                        <i class="bi bi-trash3" aria-hidden="true"></i>
+                    </button>
                 </td>
             </tr>
         }
