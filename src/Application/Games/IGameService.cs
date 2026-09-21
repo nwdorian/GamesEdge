@@ -9,5 +9,7 @@ namespace Application.Games;
 public interface IGameService
 {
     Task<PagedList<GetGamesPageResponse>> GetGamesPage(GetGamesPageQuery query, CancellationToken cancellationToken);
+    Task<Result<GetGameByIdResponse>> GetById(GetGameByIdQuery query, CancellationToken cancellationToken);
     Task<Result> Create(CreateGameCommand command, CancellationToken cancellationToken);
+    Task<Result> Delete(DeleteGameCommand command, CancellationToken cancellationToken);
 }

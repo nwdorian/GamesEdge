@@ -60,4 +60,43 @@ public class GamesController(IGameService gameService) : Controller
 
         return Created();
     }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+
+        Result<GetGameByIdResponse> getById = await gameService.GetById(new GetGameByIdQuery(id), cancellationToken);
+        if (getById.IsFailure)
+        {
+            ModelState.AddModelError(string.Empty, getById.Error.Description);
+            return PartialView(Partials.DeleteGame, GamesDelete.Empty);
+        }
+
+        return PartialView(Partials.DeleteGame, GamesDelete.Create(getById.Value));
+    }
+
+    [Authorize]
+    [HttpPost, ActionName(nameof(Delete))]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(Guid id, CancellationToken cancellationToken)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+
+        Result delete = await gameService.Delete(new DeleteGameCommand(id), cancellationToken);
+        if (delete.IsFailure)
+        {
+            ModelState.AddModelError(string.Empty, delete.Error.Description);
+            return PartialView(Partials.DeleteGame, GamesDelete.Empty);
+        }
+
+        return NoContent();
+    }
 }

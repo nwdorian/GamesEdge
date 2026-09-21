@@ -36,6 +36,21 @@ public class GameService(IApplicationDbContext dbContext) : IGameService
         return await PagedList<GetGamesPageResponse>.Create(gameResponses, query.Paging, cancellationToken);
     }
 
+    public async Task<Result<GetGameByIdResponse>> GetById(GetGameByIdQuery query, CancellationToken cancellationToken)
+    {
+        GetGameByIdResponse? game = await dbContext
+            .Games.Where(g => g.Id == query.Id)
+            .Select(g => new GetGameByIdResponse(g.Id, g.Name, g.Genre, g.Price, g.ReleaseDate))
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (game is null)
+        {
+            return GameErrors.NotFoundById(query.Id);
+        }
+
+        return game;
+    }
+
     public async Task<Result> Create(CreateGameCommand command, CancellationToken cancellationToken)
     {
         bool nameExists = await dbContext.Games.AnyAsync(g => g.Name == command.Name, cancellationToken);
@@ -54,6 +69,20 @@ public class GameService(IApplicationDbContext dbContext) : IGameService
         };
 
         dbContext.Games.Add(game);
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
+    }
+
+    public async Task<Result> Delete(DeleteGameCommand command, CancellationToken cancellationToken)
+    {
+        Game? game = await dbContext.Games.FirstOrDefaultAsync(g => g.Id == command.Id, cancellationToken);
+        if (game is null)
+        {
+            return GameErrors.NotFoundById(command.Id);
+        }
+
+        dbContext.Games.Remove(game);
         await dbContext.SaveChangesAsync(cancellationToken);
 
         return Result.Success();
