@@ -96,6 +96,11 @@ public class GameService(IApplicationDbContext dbContext) : IGameService
             return GameErrors.NotFoundById(command.Id);
         }
 
+        if (await dbContext.Games.AnyAsync(g => g.Name == command.Name && g.Id != command.Id, cancellationToken))
+        {
+            return GameErrors.NameAlreadyExists(command.Name);
+        }
+
         game.Name = command.Name;
         game.Genre = command.Genre;
         game.Price = command.Price;
