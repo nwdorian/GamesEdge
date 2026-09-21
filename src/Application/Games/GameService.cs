@@ -87,4 +87,22 @@ public class GameService(IApplicationDbContext dbContext) : IGameService
 
         return Result.Success();
     }
+
+    public async Task<Result> Update(UpdateGameCommand command, CancellationToken cancellationToken)
+    {
+        Game? game = await dbContext.Games.AsTracking().FirstOrDefaultAsync(g => g.Id == command.Id, cancellationToken);
+        if (game is null)
+        {
+            return GameErrors.NotFoundById(command.Id);
+        }
+
+        game.Name = command.Name;
+        game.Genre = command.Genre;
+        game.Price = command.Price;
+        game.ReleaseDate = command.ReleaseDate;
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
+    }
 }
