@@ -99,4 +99,46 @@ public class GamesController(IGameService gameService) : Controller
 
         return NoContent();
     }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> Update(Guid id, CancellationToken cancellationToken)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+
+        Result<GetGameByIdResponse> getById = await gameService.GetById(new GetGameByIdQuery(id), cancellationToken);
+        if (getById.IsFailure)
+        {
+            ModelState.AddModelError(string.Empty, getById.Error.Description);
+            return PartialView(Partials.UpdateGame, GamesUpdate.Empty);
+        }
+
+        return PartialView(Partials.UpdateGame, GamesUpdate.Create(getById.Value));
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Update(Guid id, GamesUpdate model, CancellationToken cancellationToken)
+    {
+        if (!ModelState.IsValid)
+        {
+            return PartialView(Partials.UpdateGame, model);
+        }
+
+        Result update = await gameService.Update(
+            new UpdateGameCommand(id, model.Name, model.Genre, model.Price, model.ReleaseDate),
+            cancellationToken
+        );
+        if (update.IsFailure)
+        {
+            ModelState.AddModelError(string.Empty, update.Error.Description);
+            return PartialView(Partials.UpdateGame, model);
+        }
+
+        return NoContent();
+    }
 }

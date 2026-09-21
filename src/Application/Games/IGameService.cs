@@ -12,4 +12,5 @@ public interface IGameService
     Task<Result<GetGameByIdResponse>> GetById(GetGameByIdQuery query, CancellationToken cancellationToken);
     Task<Result> Create(CreateGameCommand command, CancellationToken cancellationToken);
     Task<Result> Delete(DeleteGameCommand command, CancellationToken cancellationToken);
+    Task<Result> Update(UpdateGameCommand command, CancellationToken cancellationToken);
 }
