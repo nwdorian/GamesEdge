@@ -6,7 +6,7 @@ public static class UserFaker
     public static readonly Guid StaffId = new("b7ae4954-2a24-4b7d-9e53-534a03ddde25");
     public static readonly Guid SystemId = new("FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF");
     public static readonly string AdminEmail = "admin@gamesedge.com";
-    public static readonly string StaffEmail = "staff@gamesedge.com";
+    public static readonly string StaffEmail = "jdoe@gamesedge.com";
     public static readonly string SystemEmail = "system@gamesedge.com";
 
     public static User CreateAdminUser()
@@ -25,6 +25,8 @@ public static class UserFaker
         return new()
         {
             Id = StaffId,
+            FirstName = "John",
+            LastName = "Doe",
             UserName = StaffEmail,
             Email = StaffEmail,
             EmailConfirmed = true,
