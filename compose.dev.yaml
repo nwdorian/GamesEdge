@@ -15,3 +15,13 @@ services:
     ports:
       - 8025:8025
       - 1025:1025
+  
+  gamesedge.seq:
+    image: datalust/seq:latest
+    container_name: gamesedge.seq
+    environment:
+      - ACCEPT_EULA=Y
+      - SEQ_FIRSTRUN_NOAUTHENTICATION=True
+    ports:
+      - 5341:5341
+      - 8081:80
