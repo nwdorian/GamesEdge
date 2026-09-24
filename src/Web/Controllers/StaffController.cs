@@ -51,4 +51,54 @@ public class StaffController(UserManager<User> userManager) : Controller
 
         return Created();
     }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+
+        User? user = await userManager.FindByIdAsync(id.ToString());
+        if (user is null)
+        {
+            ModelState.AddModelError(string.Empty, "User was not found.");
+            return PartialView(Partials.DeleteStaff, StaffDelete.Empty);
+        }
+
+        return PartialView(Partials.DeleteStaff, StaffDelete.Create(user));
+    }
+
+    [Authorize]
+    [HttpPost, ActionName(nameof(Delete))]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(Guid id)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+
+        User? user = await userManager.FindByIdAsync(id.ToString());
+        if (user is null)
+        {
+            ModelState.AddModelError(string.Empty, "User was not found.");
+            return PartialView(Partials.DeleteStaff, StaffDelete.Empty);
+        }
+
+        IdentityResult result = await userManager.DeleteAsync(user);
+        if (!result.Succeeded)
+        {
+            foreach (IdentityError error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return PartialView(Partials.DeleteStaff, StaffDelete.Create(user));
+        }
+
+        return NoContent();
+    }
 }
