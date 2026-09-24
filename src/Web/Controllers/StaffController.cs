@@ -101,4 +101,58 @@ public class StaffController(UserManager<User> userManager) : Controller
 
         return NoContent();
     }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> Update(Guid id)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+
+        User? user = await userManager.FindByIdAsync(id.ToString());
+        if (user is null)
+        {
+            ModelState.AddModelError(string.Empty, "User was not found.");
+            return PartialView(Partials.UpdateStaff, StaffUpdate.Empty);
+        }
+
+        return PartialView(Partials.UpdateStaff, StaffUpdate.Create(user));
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Update(Guid id, StaffUpdate model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return PartialView(Partials.UpdateStaff, model);
+        }
+
+        User? user = await userManager.FindByIdAsync(id.ToString());
+        if (user is null)
+        {
+            ModelState.AddModelError(string.Empty, "User was not found.");
+            return PartialView(Partials.UpdateStaff, StaffUpdate.Empty);
+        }
+
+        user.FirstName = model.FirstName;
+        user.LastName = model.LastName;
+        user.Email = model.Email;
+
+        IdentityResult result = await userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+        {
+            foreach (IdentityError error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            return PartialView(Partials.UpdateStaff, StaffUpdate.Create(user));
+        }
+
+        return NoContent();
+    }
 }
