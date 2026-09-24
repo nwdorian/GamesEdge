@@ -6,7 +6,9 @@
 
 <h1>Admin area</h1>
 
-<table class="table">
+<h2>Staff</h2>
+
+<table class="table py-3">
     <thead>
         <tr>
             <th>
@@ -33,17 +35,29 @@
                 </td>
                 <td>
                     @Html.DisplayFor(model => staff.Email)
-                    <td class="text-end">
-                        <button type="button" class="btn btn-outline-primary"
-                                onclick="loadModal('Admin', 'Update', '@staff.Id')" aria-label="Edit game">
-                            <i class="bi bi-pencil-square" aria-hidden="true"></i>
-                        </button>
-                        <button type="button" class="btn btn-outline-primary"
-                                onclick="loadModal('Admin', 'Delete', '@staff.Id')" aria-label="Delete game">
-                            <i class="bi bi-trash3" aria-hidden="true"></i>
-                        </button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                </td>
+
+                <td class="text-end">
+                    <button type="button" class="btn btn-outline-primary"
+                            onclick="loadModal('Admin', 'Update', '@staff.Id')" aria-label="Edit game">
+                        <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-primary"
+                            onclick="loadModal('Admin', 'Delete', '@staff.Id')" aria-label="Delete game">
+                        <i class="bi bi-trash3" aria-hidden="true"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<button type="button" class="btn btn-primary" onclick="loadModal('Staff', 'Create')">
+    Add staff
+</button>
+
+<div id="modal-placeholder"></div>
+
+@section Scripts {
+    <script src="~/js/modalManager.js"></script>
+}

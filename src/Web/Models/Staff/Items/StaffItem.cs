@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Infrastructure.Users;
 
-namespace Web.Models.Admin.Items;
+namespace Web.Models.Staff.Items;
 
 public class StaffItem(User user)
 {

@@ -1,14 +1,16 @@
 using Infrastructure.Authorization;
 using Infrastructure.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Web.Models.Admin;
-using Web.Models.Admin.Items;
+using Web.Models.Staff.Items;
 
 namespace Web.Controllers;
 
 public class AdminController(UserManager<User> userManager) : Controller
 {
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> Index()
     {
