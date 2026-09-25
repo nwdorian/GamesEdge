@@ -129,6 +129,42 @@ public class AccountController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AdminLogin(string? returnUrl = null)
+    {
+        User? user = await userManager.FindByEmailAsync(UserFaker.AdminEmail);
+
+        if (user is null)
+        {
+            return RedirectToAction(nameof(Error));
+        }
+        await signInManager.SignInAsync(user, isPersistent: false);
+        if (returnUrl is null)
+        {
+            return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+        return LocalRedirect(returnUrl);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> StaffLogin(string? returnUrl = null)
+    {
+        User? user = await userManager.FindByEmailAsync(UserFaker.StaffEmail);
+
+        if (user is null)
+        {
+            return RedirectToAction(nameof(Error));
+        }
+        await signInManager.SignInAsync(user, isPersistent: false);
+        if (returnUrl is null)
+        {
+            return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+        return LocalRedirect(returnUrl);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
         await signInManager.SignOutAsync();
