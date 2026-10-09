@@ -5,6 +5,7 @@ using Application.Games.Queries;
 using Application.Games.Responses;
 using Application.Pagination;
 using Domain.Core.Results;
+using Infrastructure.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Web.Constants;
@@ -15,7 +16,7 @@ namespace Web.Controllers;
 
 public class GamesController(IGameService gameService) : Controller
 {
-    [Authorize]
+    [Authorize(Policy = Policies.RequireStaff)]
     [HttpGet]
     public async Task<IActionResult> Index(GetGamesRequest request, CancellationToken cancellationToken)
     {
@@ -33,14 +34,14 @@ public class GamesController(IGameService gameService) : Controller
         return View(GamesIndex.Create(page, request));
     }
 
-    [Authorize]
+    [Authorize(Policy = Policies.RequireStaff)]
     [HttpGet]
     public async Task<IActionResult> Create()
     {
         return PartialView(Partials.CreateGame, new GamesCreate());
     }
 
-    [Authorize]
+    [Authorize(Policy = Policies.RequireStaff)]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(GamesCreate model, CancellationToken cancellationToken)
@@ -61,7 +62,7 @@ public class GamesController(IGameService gameService) : Controller
         return Created();
     }
 
-    [Authorize]
+    [Authorize(Policy = Policies.RequireStaff)]
     [HttpGet]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
@@ -80,7 +81,7 @@ public class GamesController(IGameService gameService) : Controller
         return PartialView(Partials.DeleteGame, GamesDelete.Create(getById.Value));
     }
 
-    [Authorize]
+    [Authorize(Policy = Policies.RequireStaff)]
     [HttpPost, ActionName(nameof(Delete))]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id, CancellationToken cancellationToken)
@@ -100,7 +101,7 @@ public class GamesController(IGameService gameService) : Controller
         return NoContent();
     }
 
-    [Authorize]
+    [Authorize(Policy = Policies.RequireStaff)]
     [HttpGet]
     public async Task<IActionResult> Update(Guid id, CancellationToken cancellationToken)
     {
@@ -119,7 +120,7 @@ public class GamesController(IGameService gameService) : Controller
         return PartialView(Partials.UpdateGame, GamesUpdate.Create(getById.Value));
     }
 
-    [Authorize]
+    [Authorize(Policy = Policies.RequireStaff)]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Update(Guid id, GamesUpdate model, CancellationToken cancellationToken)

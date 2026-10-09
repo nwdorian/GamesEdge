@@ -10,14 +10,14 @@ namespace Web.Controllers;
 
 public class StaffController(UserManager<User> userManager) : Controller
 {
-    [Authorize]
+    [Authorize(Policy = Policies.RequireAdmin)]
     [HttpGet]
     public async Task<IActionResult> Create()
     {
         return PartialView(Partials.CreateStaff);
     }
 
-    [Authorize]
+    [Authorize(Policy = Policies.RequireAdmin)]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(StaffCreate model)
@@ -52,7 +52,7 @@ public class StaffController(UserManager<User> userManager) : Controller
         return Created();
     }
 
-    [Authorize]
+    [Authorize(Policy = Policies.RequireAdmin)]
     [HttpGet]
     public async Task<IActionResult> Delete(Guid id)
     {
@@ -71,7 +71,7 @@ public class StaffController(UserManager<User> userManager) : Controller
         return PartialView(Partials.DeleteStaff, StaffDelete.Create(user));
     }
 
-    [Authorize]
+    [Authorize(Policy = Policies.RequireAdmin)]
     [HttpPost, ActionName(nameof(Delete))]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
@@ -102,7 +102,7 @@ public class StaffController(UserManager<User> userManager) : Controller
         return NoContent();
     }
 
-    [Authorize]
+    [Authorize(Policy = Policies.RequireAdmin)]
     [HttpGet]
     public async Task<IActionResult> Update(Guid id)
     {
@@ -121,7 +121,7 @@ public class StaffController(UserManager<User> userManager) : Controller
         return PartialView(Partials.UpdateStaff, StaffUpdate.Create(user));
     }
 
-    [Authorize]
+    [Authorize(Policy = Policies.RequireAdmin)]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Update(Guid id, StaffUpdate model)

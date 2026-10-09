@@ -3,6 +3,7 @@ using Infrastructure.Authorization;
 using Infrastructure.Database;
 using Infrastructure.Emails;
 using Infrastructure.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Serilog;
@@ -14,6 +15,7 @@ public static class ServiceCollectionExtensions
     public static void AddPresentationServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddIdentityServices();
+        services.AddAuthorizationPolicies();
         services.AddSerilogServices(configuration);
         services.AddEmailServices();
         services.AddControllersWithViews();
@@ -26,6 +28,14 @@ public static class ServiceCollectionExtensions
     private static void AddIdentityServices(this IServiceCollection services)
     {
         services.AddIdentity<User, Role>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+    }
+
+    private static void AddAuthorizationPolicies(this IServiceCollection services)
+    {
+        services
+            .AddAuthorizationBuilder()
+            .AddPolicy(Policies.RequireAdmin, policy => policy.RequireRole(Roles.Admin))
+            .AddPolicy(Policies.RequireStaff, policy => policy.RequireRole(Roles.Staff, Roles.Admin));
     }
 
     private static void AddSerilogServices(this IServiceCollection services, IConfiguration configuration)

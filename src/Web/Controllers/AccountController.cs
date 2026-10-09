@@ -255,6 +255,12 @@ public class AccountController(
     }
 
     [HttpGet]
+    public IActionResult AccessDenied()
+    {
+        return View();
+    }
+
+    [HttpGet]
     public IActionResult Error()
     {
         return View();

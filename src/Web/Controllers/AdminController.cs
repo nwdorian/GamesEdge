@@ -10,7 +10,7 @@ namespace Web.Controllers;
 
 public class AdminController(UserManager<User> userManager) : Controller
 {
-    [Authorize]
+    [Authorize(Policy = Policies.RequireAdmin)]
     [HttpGet]
     public async Task<IActionResult> Index()
     {
