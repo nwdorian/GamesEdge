@@ -55,7 +55,7 @@ public class AccountController(
             Request.Scheme
         );
 
-        RegisterConfirmationEmail registerConfirmationEmail = new(user.Email!, callback!);
+        RegisterConfirmationEmail registerConfirmationEmail = new(user.Email, callback!);
         await emailNotificationService.SendRegisterConfirmationEmail(registerConfirmationEmail);
 
         await userManager.AddToRoleAsync(user, Roles.Staff);
