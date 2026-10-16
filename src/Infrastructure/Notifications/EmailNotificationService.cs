@@ -10,7 +10,7 @@ public class EmailNotificationService(IEmailService emailService) : IEmailNotifi
         EmailRequest emailRequest = new(
             passwordResetEmail.EmailTo,
             "Reset password link",
-            $"Please reset your password by <a href='{passwordResetEmail.CallbackUrl!}'>clicking here</a>."
+            $"Please reset your password by <a href='{passwordResetEmail.CallbackUrl}'>clicking here</a>."
         );
 
         await emailService.SendEmail(emailRequest);
