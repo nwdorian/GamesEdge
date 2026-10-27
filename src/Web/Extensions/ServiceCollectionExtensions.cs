@@ -3,7 +3,6 @@ using Infrastructure.Authorization;
 using Infrastructure.Database;
 using Infrastructure.Emails;
 using Infrastructure.Users;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Serilog;
@@ -16,6 +15,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddIdentityServices();
         services.AddAuthorizationPolicies();
+        services.AddExternalAuthentication(configuration);
         services.AddSerilogServices(configuration);
         services.AddEmailServices();
         services.AddControllersWithViews();
@@ -36,6 +36,18 @@ public static class ServiceCollectionExtensions
             .AddAuthorizationBuilder()
             .AddPolicy(Policies.RequireAdmin, policy => policy.RequireRole(Roles.Admin))
             .AddPolicy(Policies.RequireStaff, policy => policy.RequireRole(Roles.Staff, Roles.Admin));
+    }
+
+    private static void AddExternalAuthentication(this IServiceCollection services, IConfiguration configuration)
+    {
+        services
+            .AddAuthentication()
+            .AddGoogle(options =>
+            {
+                options.ClientId = configuration["Authentication:Google:ClientId"] ?? "Google ClientId was not found";
+                options.ClientSecret =
+                    configuration["Authentication:Google:ClientSecret"] ?? "Google ClientSecret was not found";
+            });
     }
 
     private static void AddSerilogServices(this IServiceCollection services, IConfiguration configuration)
