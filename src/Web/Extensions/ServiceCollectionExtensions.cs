@@ -47,6 +47,12 @@ public static class ServiceCollectionExtensions
                 options.ClientId = configuration["Authentication:Google:ClientId"] ?? "Google ClientId was not found";
                 options.ClientSecret =
                     configuration["Authentication:Google:ClientSecret"] ?? "Google ClientSecret was not found";
+            })
+            .AddFacebook(options =>
+            {
+                options.ClientId = configuration["Authentication:Facebook:AppId"] ?? "Facebook AppId was not found";
+                options.ClientSecret =
+                    configuration["Authentication:Facebook:AppSecret"] ?? "Facebook AppSecret was not found";
             });
     }
 
