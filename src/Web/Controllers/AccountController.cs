@@ -194,7 +194,7 @@ public class AccountController(
         );
         if (signInResult.Succeeded)
         {
-            return RedirectToAction(returnUrl);
+            return LocalRedirect(returnUrl ?? "/");
         }
         else
         {
