@@ -53,6 +53,13 @@ public static class ServiceCollectionExtensions
                 options.ClientId = configuration["Authentication:Facebook:AppId"] ?? "Facebook AppId was not found";
                 options.ClientSecret =
                     configuration["Authentication:Facebook:AppSecret"] ?? "Facebook AppSecret was not found";
+            })
+            .AddGitHub(options =>
+            {
+                options.ClientId = configuration["Authentication:Github:ClientId"] ?? "Github ClientId was not found";
+                options.ClientSecret =
+                    configuration["Authentication:Github:ClientSecret"] ?? "Github ClientSecret was not found";
+                options.Scope.Add("user:email");
             });
     }
 
