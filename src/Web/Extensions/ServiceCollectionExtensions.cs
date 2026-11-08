@@ -60,6 +60,13 @@ public static class ServiceCollectionExtensions
                 options.ClientSecret =
                     configuration["Authentication:Github:ClientSecret"] ?? "Github ClientSecret was not found";
                 options.Scope.Add("user:email");
+            })
+            .AddMicrosoftAccount(options =>
+            {
+                options.ClientId =
+                    configuration["Authentication:Microsoft:ClientId"] ?? "Microsoft ClientId was not found";
+                options.ClientSecret =
+                    configuration["Authentication:Microsoft:ClientSecret"] ?? "Microsoft ClientSecret was not found";
             });
     }
 

@@ -26,6 +26,7 @@
         <PackageReference Include="AspNet.Security.OAuth.GitHub" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
         <PackageReference Include="Serilog.AspNetCore" />
         <PackageReference Include="Serilog.Sinks.Console" />

@@ -196,60 +196,50 @@ public class AccountController(
         {
             return LocalRedirect(returnUrl ?? "/");
         }
-        else
-        {
-            ViewData["ReturnUrl"] = returnUrl;
-            ViewData["Provider"] = info.LoginProvider;
-            string? email = info.Principal.FindFirstValue(ClaimTypes.Email);
-            return View("ExternalLogin", new ExternalLoginModel { Email = email });
-        }
-    }
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginModel model, string? returnUrl = null)
-    {
-        if (!ModelState.IsValid)
+        if (User.Identity?.IsAuthenticated is true)
         {
-            return View(model);
-        }
-
-        ExternalLoginInfo? info = await signInManager.GetExternalLoginInfoAsync();
-        if (info is null)
-        {
-            return View(nameof(Error));
+            User? currentUser = await userManager.GetUserAsync(User);
+            if (currentUser is not null)
+            {
+                await userManager.AddLoginAsync(currentUser, info);
+                return LocalRedirect(returnUrl ?? "/");
+            }
         }
 
         IdentityResult result;
-        User? user = await userManager.FindByEmailAsync(model.Email!);
+
+        string? email = info.Principal.FindFirstValue(ClaimTypes.Email);
+        if (email is null)
+        {
+            return RedirectToAction(nameof(Login));
+        }
+        User? user = await userManager.FindByEmailAsync(email);
         if (user is not null)
         {
             result = await userManager.AddLoginAsync(user, info);
             if (result.Succeeded)
             {
                 await signInManager.SignInAsync(user, isPersistent: false);
-                return LocalRedirect(returnUrl!);
+                return LocalRedirect(returnUrl ?? "/");
             }
         }
-        else
+
+        user = new User
         {
-            model.Principal = info.Principal;
-            user = new User
-            {
-                UserName = model.Email,
-                Email = model.Email,
-                EmailConfirmed = true,
-            };
-            result = await userManager.CreateAsync(user);
+            UserName = email,
+            Email = email,
+            EmailConfirmed = true,
+        };
+        result = await userManager.CreateAsync(user);
+        if (result.Succeeded)
+        {
+            result = await userManager.AddLoginAsync(user, info);
             if (result.Succeeded)
             {
-                result = await userManager.AddLoginAsync(user, info);
-                if (result.Succeeded)
-                {
-                    await userManager.AddToRoleAsync(user, Roles.Staff);
-                    await signInManager.SignInAsync(user, isPersistent: false);
-                    return LocalRedirect(returnUrl!);
-                }
+                await userManager.AddToRoleAsync(user, Roles.Staff);
+                await signInManager.SignInAsync(user, isPersistent: false);
+                return LocalRedirect(returnUrl ?? "/");
             }
         }
 
@@ -258,7 +248,69 @@ public class AccountController(
             ModelState.TryAddModelError(error.Code, error.Description);
         }
 
-        return View(nameof(ExternalLogin), model);
+        return View(nameof(Error));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ExternalLoginConfirmation(string? returnUrl = null)
+    {
+        ExternalLoginInfo? info = await signInManager.GetExternalLoginInfoAsync();
+        if (info is null)
+        {
+            return RedirectToAction(nameof(Login));
+        }
+
+        string? email = info.Principal.FindFirstValue(ClaimTypes.Email);
+        if (email is null)
+        {
+            return RedirectToAction(nameof(Login));
+        }
+
+        string currentUserEmail = User.Claims.First(c => c.Type == ClaimTypes.Email).Value;
+        User? currentUser = await userManager.FindByEmailAsync(currentUserEmail);
+        if (currentUser is not null)
+        {
+            await userManager.AddLoginAsync(currentUser, info);
+            return LocalRedirect(returnUrl ?? "/");
+        }
+
+        IdentityResult result;
+        User? user = await userManager.FindByEmailAsync(email);
+        if (user is not null)
+        {
+            result = await userManager.AddLoginAsync(user, info);
+            if (result.Succeeded)
+            {
+                await signInManager.SignInAsync(user, isPersistent: false);
+                return LocalRedirect(returnUrl ?? "/");
+            }
+        }
+
+        user = new User
+        {
+            UserName = email,
+            Email = email,
+            EmailConfirmed = true,
+        };
+        result = await userManager.CreateAsync(user);
+        if (result.Succeeded)
+        {
+            result = await userManager.AddLoginAsync(user, info);
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(user, Roles.Staff);
+                await signInManager.SignInAsync(user, isPersistent: false);
+                return LocalRedirect(returnUrl ?? "/");
+            }
+        }
+
+        foreach (IdentityError error in result.Errors)
+        {
+            ModelState.TryAddModelError(error.Code, error.Description);
+        }
+
+        return View(nameof(ExternalLogin));
     }
 
     [HttpPost]
