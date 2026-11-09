@@ -197,16 +197,6 @@ public class AccountController(
             return LocalRedirect(returnUrl ?? "/");
         }
 
-        if (User.Identity?.IsAuthenticated is true)
-        {
-            User? currentUser = await userManager.GetUserAsync(User);
-            if (currentUser is not null)
-            {
-                await userManager.AddLoginAsync(currentUser, info);
-                return LocalRedirect(returnUrl ?? "/");
-            }
-        }
-
         IdentityResult result;
 
         string? email = info.Principal.FindFirstValue(ClaimTypes.Email);
@@ -253,64 +243,35 @@ public class AccountController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ExternalLoginConfirmation(string? returnUrl = null)
+    public IActionResult LinkExternalLogin(string provider, string? returnUrl = null)
     {
-        ExternalLoginInfo? info = await signInManager.GetExternalLoginInfoAsync();
-        if (info is null)
+        string? redirectUrl = Url.Action(nameof(LinkExternalLoginCallback), "Account", new { returnUrl });
+        AuthenticationProperties properties = signInManager.ConfigureExternalAuthenticationProperties(
+            provider,
+            redirectUrl,
+            userManager.GetUserId(User)
+        );
+        return Challenge(properties, provider);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> LinkExternalLoginCallback(string? returnUrl = null)
+    {
+        string? userId = userManager.GetUserId(User);
+        User? user = await userManager.FindByIdAsync(userId ?? "");
+        ExternalLoginInfo? info = await signInManager.GetExternalLoginInfoAsync(userId);
+        if (user is null || info is null)
         {
             return RedirectToAction(nameof(Login));
         }
 
-        string? email = info.Principal.FindFirstValue(ClaimTypes.Email);
-        if (email is null)
+        IdentityResult result = await userManager.AddLoginAsync(user, info);
+        if (!result.Succeeded)
         {
-            return RedirectToAction(nameof(Login));
+            return View(nameof(Error));
         }
 
-        string currentUserEmail = User.Claims.First(c => c.Type == ClaimTypes.Email).Value;
-        User? currentUser = await userManager.FindByEmailAsync(currentUserEmail);
-        if (currentUser is not null)
-        {
-            await userManager.AddLoginAsync(currentUser, info);
-            return LocalRedirect(returnUrl ?? "/");
-        }
-
-        IdentityResult result;
-        User? user = await userManager.FindByEmailAsync(email);
-        if (user is not null)
-        {
-            result = await userManager.AddLoginAsync(user, info);
-            if (result.Succeeded)
-            {
-                await signInManager.SignInAsync(user, isPersistent: false);
-                return LocalRedirect(returnUrl ?? "/");
-            }
-        }
-
-        user = new User
-        {
-            UserName = email,
-            Email = email,
-            EmailConfirmed = true,
-        };
-        result = await userManager.CreateAsync(user);
-        if (result.Succeeded)
-        {
-            result = await userManager.AddLoginAsync(user, info);
-            if (result.Succeeded)
-            {
-                await userManager.AddToRoleAsync(user, Roles.Staff);
-                await signInManager.SignInAsync(user, isPersistent: false);
-                return LocalRedirect(returnUrl ?? "/");
-            }
-        }
-
-        foreach (IdentityError error in result.Errors)
-        {
-            ModelState.TryAddModelError(error.Code, error.Description);
-        }
-
-        return View(nameof(ExternalLogin));
+        return LocalRedirect(returnUrl ?? "/");
     }
 
     [HttpPost]
