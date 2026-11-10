@@ -67,6 +67,13 @@ public static class ServiceCollectionExtensions
                     configuration["Authentication:Microsoft:ClientId"] ?? "Microsoft ClientId was not found";
                 options.ClientSecret =
                     configuration["Authentication:Microsoft:ClientSecret"] ?? "Microsoft ClientSecret was not found";
+            })
+            .AddDiscord(options =>
+            {
+                options.ClientId = configuration["Authentication:Discord:ClientId"] ?? "Discord ClientId was not found";
+                options.ClientSecret =
+                    configuration["Authentication:Discord:ClientSecret"] ?? "Discord ClientSecret was not found";
+                options.Scope.Add("email");
             });
     }
 
