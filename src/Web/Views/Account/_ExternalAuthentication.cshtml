@@ -6,7 +6,7 @@
 
 <div class="d-flex justify-content-center">
     <section>
-        <p>Or login with:</p>
+        <p class="text-center">Or login with:</p>
         @{
             var providers = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (!providers.Any())
@@ -19,12 +19,13 @@
             {
                 <form asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post"
                       class="form-horizontal">
-                    <div class="d-grid gap-2">
+                    <div class="d-flex flex-wrap justify-content-center gap-2">
                         @foreach (var provider in providers)
                         {
-                            <button type="submit" name="provider" value="@provider.Name" class="btn btn-outline-secondary w-100">
-                                <i class="bi @provider.BootstrapIcon()" aria-hidden="true"></i>
-                                <span>@provider.Name</span>
+                            <button type="submit" name="provider" value="@provider.Name" title="@provider.Name"
+                                    aria-label="@provider.Name"
+                                    class="btn btn-outline-secondary lh-1 d-inline-flex align-items-center justify-content-center rounded-3 p-2">
+                                <i class="bi @provider.BootstrapIcon() fs-5" aria-hidden="true"></i>
                             </button>
                         }
                     </div>
