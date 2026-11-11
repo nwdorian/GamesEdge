@@ -1,11 +1,12 @@
 ﻿@using Infrastructure.Users
 @using Microsoft.AspNetCore.Identity
+@using Web.Models.Users.Extensions
 
 @inject SignInManager<User> SignInManager
 
 <div class="d-flex justify-content-center">
     <section>
-        <p>Or continue with:</p>
+        <p class="text-center">Or login with:</p>
         @{
             var providers = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (!providers.Any())
@@ -18,13 +19,15 @@
             {
                 <form asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post"
                       class="form-horizontal">
-                    <div>
-                        <p>
-                            @foreach (var provider in providers)
-                            {
-                                <input type="submit" class="btn btn-info w-100" value="@provider.Name" name="provider" />
-                            }
-                        </p>
+                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                        @foreach (var provider in providers)
+                        {
+                            <button type="submit" name="provider" value="@provider.Name" title="@provider.Name"
+                                    aria-label="@provider.Name"
+                                    class="btn btn-outline-secondary lh-1 d-inline-flex align-items-center justify-content-center rounded-3 p-2">
+                                <i class="bi @provider.BootstrapIcon() fs-5" aria-hidden="true"></i>
+                            </button>
+                        }
                     </div>
                 </form>
             }
