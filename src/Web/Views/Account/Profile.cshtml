@@ -1,0 +1,40 @@
+@model UserProfile
+
+@{
+    ViewData["Title"] = "Profile";
+    ViewData["ProfileSection"] = "Profile";
+}
+
+<h1>Profile</h1>
+
+<hr />
+<div class="row">
+    <partial name="_ProfileSidebar" />
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-3">@User.Identity!.Name</h5>
+                <dl class="row mb-0">
+                    <dt class="col-sm-3">First Name</dt>
+                    <dd class="col-sm-9">@(Model.FirstName ?? "—")</dd>
+                    <dt class="col-sm-3">Last Name</dt>
+                    <dd class="col-sm-9">@(Model.LastName ?? "—")</dd>
+                    <dt class="col-sm-3">Email</dt>
+                    <dd class="col-sm-9">
+                        @(Model.Email ?? "—")
+                        @if (Model.EmailConfirmed)
+                        {
+                            <span class="badge bg-success">Verified</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Not verified</span>
+                        }
+                    </dd>
+                </dl>
+                <hr />
+                <a asp-action="ForgotPassword" class="btn btn-outline-primary">Reset Password</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,53 @@
+@model UserConnections
+@using Web.Models.Users.Extensions
+
+@{
+    ViewData["Title"] = "Connections";
+    ViewData["ProfileSection"] = "Connections";
+}
+
+<h1>Connections</h1>
+
+<hr />
+<div class="row">
+    <partial name="_ProfileSidebar" />
+    <div class="col-md-9">
+        <p class="mb-3">Link external services to your account to sign in with them.</p>
+        @if (!Model.Providers.Any())
+        {
+            <div class="card">
+                <div class="card-body">
+                    <p class="mb-0 text-center">We couldn't find any external provider.</p>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="list-group">
+                @foreach (ConnectedProvider provider in Model.Providers)
+                {
+                    <div class="list-group-item d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi @provider.BootstrapIcon() fs-4" aria-hidden="true"></i>
+                            <span>@provider.DisplayName</span>
+                        </div>
+                        @if (provider.IsConnected)
+                        {
+                            <form asp-action="RemoveExternalLogin" method="post">
+                                <input type="hidden" name="provider" value="@provider.ProviderName" />
+                                <button type="submit" class="btn btn-outline-danger">Disconnect</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="LinkExternalLogin" asp-route-returnUrl="/Account/Connections" method="post">
+                                <input type="hidden" name="provider" value="@provider.ProviderName" />
+                                <button type="submit" class="btn btn-outline-primary">Connect</button>
+                            </form>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>

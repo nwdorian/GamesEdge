@@ -4,6 +4,7 @@ using Application.Notifications;
 using Infrastructure.Authorization;
 using Infrastructure.Users;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Web.Models.Users;
@@ -272,6 +273,83 @@ public class AccountController(
         }
 
         return LocalRedirect(returnUrl ?? "/");
+    }
+
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> Profile()
+    {
+        string? userId = userManager.GetUserId(User);
+        User? user = await userManager.FindByIdAsync(userId ?? "");
+        if (user is null)
+        {
+            return RedirectToAction(nameof(Login));
+        }
+
+        UserProfile profile = new()
+        {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            EmailConfirmed = user.EmailConfirmed,
+        };
+
+        return View(profile);
+    }
+
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> Connections()
+    {
+        string? userId = userManager.GetUserId(User);
+        User? user = await userManager.FindByIdAsync(userId ?? "");
+        if (user is null)
+        {
+            return RedirectToAction(nameof(Login));
+        }
+
+        IEnumerable<AuthenticationScheme> schemes = await signInManager.GetExternalAuthenticationSchemesAsync();
+        IList<UserLoginInfo> logins = await userManager.GetLoginsAsync(user);
+
+        List<ConnectedProvider> providers = schemes
+            .Select(scheme => new ConnectedProvider
+            {
+                ProviderName = scheme.Name,
+                DisplayName = scheme.DisplayName ?? scheme.Name,
+                IsConnected = logins.Any(login => login.LoginProvider == scheme.Name),
+            })
+            .ToList();
+
+        return View(new UserConnections { Providers = providers });
+    }
+
+    [HttpPost]
+    [Authorize]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RemoveExternalLogin(string provider)
+    {
+        string? userId = userManager.GetUserId(User);
+        User? user = await userManager.FindByIdAsync(userId ?? "");
+        if (user is null)
+        {
+            return RedirectToAction(nameof(Login));
+        }
+
+        UserLoginInfo? login = (await userManager.GetLoginsAsync(user)).FirstOrDefault(l =>
+            l.LoginProvider == provider
+        );
+        if (login is null)
+        {
+            return View(nameof(Error));
+        }
+
+        IdentityResult result = await userManager.RemoveLoginAsync(user, login.LoginProvider, login.ProviderKey);
+        if (!result.Succeeded)
+        {
+            return View(nameof(Error));
+        }
+
+        return RedirectToAction(nameof(Connections));
     }
 
     [HttpPost]
