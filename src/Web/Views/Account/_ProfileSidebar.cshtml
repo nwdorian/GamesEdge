@@ -1,0 +1,12 @@
+<div class="col-md-3 mb-3">
+    <div class="list-group">
+        <a asp-controller="Account" asp-action="Profile"
+           class="list-group-item list-group-item-action @(Equals(ViewData["ProfileSection"], "Profile") ? "active" : "")">
+            Profile
+        </a>
+        <a asp-controller="Account" asp-action="Connections"
+           class="list-group-item list-group-item-action @(Equals(ViewData["ProfileSection"], "Connections") ? "active" : "")">
+            Connections
+        </a>
+    </div>
+</div>

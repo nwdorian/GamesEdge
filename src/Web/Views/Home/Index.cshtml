@@ -5,7 +5,7 @@
     ViewData["BodyClass"] = "home-page";
 }
 
-<div class="home-hero p-4 p-md-5 mb-5">
+<div class="home-hero p-4 p-md-5 mb-3">
     <h1 class="display-5 mb-2">GamesEdge</h1>
     <p class="lead mb-0">
         GamesEdge keeps your game catalog in one place. Search it, keep it up to date and pick up where you
@@ -14,7 +14,7 @@
 </div>
 
 <h2 class="h4 mb-3">Where to next</h2>
-<div class="row g-4 mb-5">
+<div class="row g-4 mb-3">
     <div class="col-12 col-md-6 col-lg-3">
         <div class="card home-card position-relative h-100">
             <div class="card-body">
@@ -77,7 +77,7 @@
 </div>
 
 <h2 class="h4 mb-3">What you can do here</h2>
-<div class="row g-4 mb-5">
+<div class="row g-4 mb-3">
     <div class="col-12 col-md-4">
         <div class="card home-card h-100">
             <div class="card-body">
@@ -117,19 +117,4 @@
             </div>
         </div>
     }
-</div>
-
-<div class="card mb-3">
-    <div class="card-body d-flex flex-wrap align-items-center gap-3">
-        <i class="bi bi-key-fill fs-4 text-primary" aria-hidden="true"></i>
-        <div class="me-auto">
-            <h2 class="h5 mb-1">Account</h2>
-            <p class="text-secondary mb-0">
-                Signed in as @User.Identity!.Name. Use the navigation bar above to sign out.
-            </p>
-        </div>
-        <a class="btn btn-outline-primary" asp-controller="Account" asp-action="ForgotPassword">
-            Reset password
-        </a>
-    </div>
 </div>

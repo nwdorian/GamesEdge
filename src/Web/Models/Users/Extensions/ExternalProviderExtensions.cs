@@ -18,4 +18,6 @@ public static class ExternalProviderExtensions
         };
 
     public static string BootstrapIcon(this AuthenticationScheme scheme) => BootstrapIcon(scheme.Name);
+
+    public static string BootstrapIcon(this ConnectedProvider provider) => BootstrapIcon(provider.ProviderName);
 }
